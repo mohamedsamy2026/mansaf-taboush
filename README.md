@@ -1,37 +1,38 @@
-# منسف طبوش | Mansaf Taboush
+# منسف طبوش — Mansaf Taboush (React + Vite + Tailwind)
 
-Responsive bilingual (Arabic/English) React + Vite ordering website with WhatsApp checkout. Based on the original restaurant ZIP design and logo.
+Interactive, bilingual (AR default / EN), delivery-only ordering site with WhatsApp checkout.
 
-## Run locally
-
-Requires Node.js 20.19+ (or 22.12+).
-
+## Run
 ```bash
 npm install
-npm run dev
-npm run build
+npm run dev      # development
+npm run build    # production build -> dist/
 npm run preview
 ```
+SPA rewrites are included (`vercel.json`, `public/_redirects` for Netlify/Cloudflare).
 
-## Configuration
+## Configure (everything is centralized)
+| File | What |
+|---|---|
+| `src/config/restaurant.js` | WhatsApp number, phone, currency, delivery fee (`null` = confirmed on WhatsApp), social handle + **verified** social URLs |
+| `src/data/products.js` | Categories, products, sizes, prices, images |
+| `src/i18n/translations.js` | All Arabic / English text |
 
-- `src/config/restaurant.js`: WhatsApp number (201115083459), currency, delivery configuration and unverified social URLs.
-- `src/data/products.js`: **All products, descriptions, sizes and prices are DEMONSTRATION data.** Replace with the official menu before launch.
-- `src/i18n/translations.js`: localized content.
-- `public/images/brand/logo.jpeg`: original supplied logo.
-- `public/images/brand/reference.jpeg`: complete original reference, kept as supplied.
-- `public/images/brand/hero-food.webp` and `hero-landscape.webp`: crops of original promotional art. No independent product photo catalog was supplied; product cards temporarily reuse logo artwork, not separate food photos.
+## MUST be replaced before launch (demo data)
+- All product names, descriptions, sizes and **prices are samples**, not confirmed offerings.
+- Product images: every product reuses one crop of the supplied reference (`public/images/products/mansaf-plate.jpg`) because the ZIP has no photo catalog. Replace per product in `products.js`.
+- Social links are `null` → icons show as inactive. Add verified URLs in `restaurant.js`.
+- No address or opening hours were supplied, so none are shown.
+- Delivery fee is not configured; messages say it will be confirmed by the restaurant.
 
-## Important behavior
+## Assets
+- `public/images/brand/logo.jpeg`, `reference.jpeg`: untouched originals.
+- `logo-transparent.png`: derived from the logo (black JPEG background removed) for use on colored backgrounds.
+- `mansaf-plate.jpg`: crop of the plate from the reference.
 
-- Delivery only, not dine-in or pickup.
-- Customer details and cart stay in browser/local state; no backend or payment gateway.
-- Checkout opens a prefilled WhatsApp chat. **The order is not placed or confirmed until the customer sends the message and the restaurant replies.**
-- Cart is not cleared when WhatsApp opens.
-- Delivery costs and time must be confirmed with the restaurant.
-- Demo prices are not a claim about actual restaurant pricing.
-- Unverified social media URLs are not linked.
+## Behavior notes
+- WhatsApp opens via `wa.me` with a prefilled message; the customer presses Send. The app never claims the order was sent or confirmed, and the cart is not cleared.
+- Cart persists in localStorage; size variants are separate lines (`productId|sizeId`).
 
-## Deployment
-
-Deploy the `dist/` output to Vercel/Netlify/another SPA-capable host. Configure fallback rewrites to `index.html` for `/menu`, `/cart` and `/checkout` (see `vercel.json` and `public/_redirects`).
+## Known visual limitations
+The reference is a flattened image, so castle/palm silhouettes, ornaments and the patterned borders are simplified SVG/CSS recreations, not exact copies. Fonts load from Google Fonts (Lalezar, Cairo); Lalezar approximates, but does not match, the reference's display lettering.

@@ -1,15 +1,43 @@
-import {restaurant} from '../config/restaurant';
-const money=(n,lang)=>`${n.toLocaleString(lang==='ar'?'ar-EG':'en-US')} ${lang==='ar'?'ج.م':'EGP'}`;
-export function whatsappUrl(items,details,lang){
- const ar=lang==='ar';const text=[];
- text.push(ar?'مرحبًا منسف طبوش،\nأرغب في تقديم الطلب التالي (بانتظار تأكيد المطعم):':'Hello Mansaf Taboush,\nI would like to request the following order (pending restaurant confirmation):');
- text.push(ar?'\nتفاصيل الطلب:':'\nOrder details:');
- items.forEach((item,i)=>{text.push(`${i+1}. ${item.product.name[lang]}`);if(item.size)text.push(`${ar?'الحجم':'Size'}: ${item.size[lang]}`);text.push(`${ar?'الكمية':'Quantity'}: ${item.qty}`);text.push(`${ar?'السعر التجريبي':'Demo price'}: ${money(item.unit*item.qty,lang)}`)});
- const subtotal=items.reduce((s,i)=>s+i.unit*i.qty,0);text.push(`\n--------------------\n${ar?'الإجمالي المبدئي (بدون رسوم التوصيل)':'Estimated subtotal (delivery not included)'}: ${money(subtotal,lang)}`);
- text.push(ar?'الأسعار تجريبية وتحتاج تأكيد المطعم.':'Prices are demo values and need restaurant confirmation.');
- text.push(`\n${ar?'بيانات العميل':'Customer details'}:`);
- const fields=ar?{name:'الاسم',phone:'رقم الهاتف',area:'المدينة / المنطقة',address:'عنوان التوصيل',building:'مبنى / شقة',map:'رابط الموقع',date:'تاريخ التوصيل المطلوب',time:'وقت التوصيل المطلوب',notes:'ملاحظات'}:{name:'Name',phone:'Phone',area:'City / Area',address:'Delivery address',building:'Building / Apartment',map:'Map link',date:'Requested date',time:'Requested time',notes:'Notes'};
- for(const [key,label] of Object.entries(fields)){if(details[key]?.trim())text.push(`${label}: ${details[key].trim()}`)}
- text.push(ar?'\nيرجى تأكيد الطلب والسعر النهائي ورسوم التوصيل وإمكانية التوصيل والموعد. شكرًا لكم.':'\nPlease confirm the order, final price, delivery fee, availability, and delivery time. Thank you.');
- return `https://wa.me/${restaurant.whatsapp}?text=${encodeURIComponent(text.join('\n'))}`;
+import { WHATSAPP_NUMBER, DELIVERY_FEE } from '../config/restaurant';
+import { getProduct, unitPrice } from '../data/products';
+import { money } from './format';
+
+export const lineTotal = (item) => unitPrice(getProduct(item.productId), item.sizeId) * item.qty;
+export const subtotalOf = (items) => items.reduce((s, i) => s + lineTotal(i), 0);
+
+export const waLink = (text = '') =>
+  `https://wa.me/${WHATSAPP_NUMBER}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
+
+export function buildOrderMessage(lang, items, customer) {
+  const ar = lang === 'ar';
+  const L = ar
+    ? { hi: 'مرحبًا منسف طبوش،', intro: 'أرغب في تأكيد الطلب التالي:', det: 'تفاصيل الطلب:', size: 'الحجم', qty: 'الكمية', price: 'السعر',
+        total: 'الإجمالي المبدئي', fee: DELIVERY_FEE == null ? '(لا يشمل رسوم التوصيل غير المؤكدة)' : '', cust: 'بيانات العميل:',
+        name: 'الاسم', phone: 'رقم الهاتف', addr: 'عنوان التوصيل', map: 'رابط الموقع', when: 'موعد التوصيل المطلوب', notes: 'ملاحظات',
+        none: 'غير محدد', end: 'يرجى تأكيد الطلب ورسوم التوصيل والإجمالي النهائي وموعد التسليم.', thanks: 'شكرًا لكم.' }
+    : { hi: 'Hello Mansaf Taboush,', intro: 'I would like to place the following order:', det: 'Order details:', size: 'Size', qty: 'Quantity', price: 'Price',
+        total: 'Preliminary total', fee: DELIVERY_FEE == null ? '(excludes unconfirmed delivery fee)' : '', cust: 'Customer details:',
+        name: 'Name', phone: 'Phone', addr: 'Delivery address', map: 'Location link', when: 'Requested delivery time', notes: 'Notes',
+        none: 'Not specified', end: 'Please confirm the order, delivery fee, final total and delivery time.', thanks: 'Thank you.' };
+
+  const lines = items.map((it, i) => {
+    const p = getProduct(it.productId);
+    const size = p.sizes ? p.sizes.find((s) => s.id === it.sizeId) || p.sizes[0] : null;
+    return [`${i + 1}. ${p.name[lang]}`, size && `${L.size}: ${size.label[lang]}`, `${L.qty}: ${it.qty}`, `${L.price}: ${money(lineTotal(it), lang)}`]
+      .filter(Boolean).join('\n');
+  });
+  const sub = subtotalOf(items);
+  const total = DELIVERY_FEE == null ? sub : sub + DELIVERY_FEE;
+  const when = [customer.date, customer.time].filter(Boolean).join(' ') || L.none;
+  return [
+    L.hi, '', L.intro, '', L.det, '', lines.join('\n\n'), '', '--------------------',
+    `${L.total}: ${money(total, lang)} ${L.fee}`.trim(), '', L.cust, '',
+    `${L.name}: ${customer.name}`, `${L.phone}: ${customer.phone}`,
+    `${L.addr}: ${[customer.city, customer.street, customer.building].filter(Boolean).join(' - ')}`,
+    customer.mapLink && `${L.map}: ${customer.mapLink}`,
+    `${L.when}: ${when}`, `${L.notes}: ${customer.notes || '-'}`, '', L.end, '', L.thanks,
+  ].filter((x) => x !== undefined && x !== false && x !== null).join('\n');
 }
+
+// Must be called directly from a click handler. Never marks the order "sent".
+export const openWhatsApp = (text) => window.open(waLink(text), '_blank', 'noopener,noreferrer');

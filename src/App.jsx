@@ -1,4 +1,27 @@
-import React,{useEffect}from'react';import{Routes,Route,useLocation,Link}from'react-router-dom';import{Header,Footer}from'./components/Layout';import{MenuGrid}from'./components/MenuItems';import DirectOrder from'./components/DirectOrder';import Home from'./pages/Home';import Cart from'./pages/Cart';import Checkout from'./pages/Checkout';import{useStore}from'./context/Store';import{t}from'./i18n/translations';
-function ScrollHandler(){const {pathname,hash}=useLocation();useEffect(()=>{if(hash){const id=hash.slice(1);requestAnimationFrame(()=>setTimeout(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth'}),100))}else window.scrollTo(0,0)},[pathname,hash]);return null}
-function NotFound(){const{lang}=useStore();return <main className="interior-page"><div className="container empty-cart"><h1>404</h1><h2>{t[lang].notFound}</h2><Link to="/" className="gold-button">{t[lang].back}</Link></div></main>}
-export default function App(){return <><ScrollHandler/><Header/><Routes><Route path="/" element={<Home/>}/><Route path="/menu" element={<main className="interior-page menu-page"><MenuGrid/></main>}/><Route path="/cart" element={<Cart/>}/><Route path="/checkout" element={<Checkout/>}/><Route path="*" element={<NotFound/>}/></Routes><Footer/><DirectOrder/></>}
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import ScrollManager from './components/layout/ScrollManager';
+import CartDrawer from './components/cart/CartDrawer';
+import OrderModal from './components/checkout/OrderModal';
+import Home from './pages/Home';
+import MenuPage from './pages/MenuPage';
+import AboutPage from './pages/AboutPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import NotFound from './pages/NotFound';
+
+export default function App() {
+  return (
+    <>
+      <ScrollManager /><Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} /><Route path="/menu" element={<MenuPage />} /><Route path="/about" element={<AboutPage />} />
+          <Route path="/cart" element={<CartPage />} /><Route path="/checkout" element={<CheckoutPage />} /><Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+      <Footer /><CartDrawer /><OrderModal />
+    </>
+  );
+}
