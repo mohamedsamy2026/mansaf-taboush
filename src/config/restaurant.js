@@ -1,7 +1,7 @@
 export const WHATSAPP_NUMBER = '966531562040';
 export const DISPLAY_PHONE = '+966531562040';
 
-export const CURRENCY = { ar: 'ج.م', en: 'EGP' };
+export const CURRENCY = { ar: 'ر.س', en: 'SAR' }; 
 export const DELIVERY_FEE = null;
 export const SOCIAL_HANDLE = '@MansafTaboush';
 
