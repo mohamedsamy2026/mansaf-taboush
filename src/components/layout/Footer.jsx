@@ -1,12 +1,14 @@
+import { useShop } from '../../context/ShopContext';
 import { Link } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { waLink } from "../../utils/whatsapp";
-import { SOCIAL_HANDLE, DISPLAY_PHONE } from "../../config/restaurant";
+import { SOCIAL_HANDLE, SHOW_SOCIAL_HANDLE, DISPLAY_PHONE, LOGO_URL } from "../../config/restaurant";
 import Social from "../ui/Social";
 
 export default function Footer() {
   const { t } = useApp();
+  useShop();
   return (
     <footer className="relative bg-burgundy-deep text-cream">
       <svg
@@ -29,9 +31,9 @@ export default function Footer() {
       <div className="geo mx-auto max-w-7xl px-4 pt-6 pb-8 grid gap-6 md:grid-cols-3 items-center text-center md:text-start">
         <div className="flex flex-col items-center md:items-start gap-3">
           <Social />
-          <span dir="ltr" className="text-gold-light font-semibold">
+          {SHOW_SOCIAL_HANDLE && SOCIAL_HANDLE && <span dir="ltr" className="text-gold-light font-semibold">
             {SOCIAL_HANDLE}
-          </span>
+          </span>}
           <a
             href={`tel:${DISPLAY_PHONE}`}
             dir="ltr"
@@ -42,7 +44,7 @@ export default function Footer() {
         </div>
         <div className="flex flex-col items-center gap-2">
           <img
-            src="/images/brand/logo-transparent.png"
+            src={LOGO_URL}
             alt={t("brand")}
             width="96"
             height="96"

@@ -1,3 +1,6 @@
+import { LOGO_URL, HERO_PRODUCT_ID } from '../../config/restaurant';
+import { getProduct, products } from '../../data/products';
+import { useShop } from '../../context/ShopContext';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ShoppingCart } from 'lucide-react';
@@ -15,6 +18,7 @@ const FADE = { WebkitMaskImage: `${M},${V}`, maskImage: `${M},${V}`, WebkitMaskC
 
 export default function Hero() {
   const { t, lang, setOrderNow } = useApp();
+  useShop();
   const ar = lang === 'ar';
   return (
     <section className="relative isolate overflow-hidden pt-16 pb-28 md:pb-36" style={{ background: 'linear-gradient(180deg,#f2cf98 0%,#d99a58 45%,#8a4a22 100%)' }}>
@@ -29,7 +33,7 @@ export default function Hero() {
 
       <div dir="ltr" className="mx-auto max-w-7xl px-4 pt-6 grid gap-4 md:gap-x-6 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] items-center"
         style={{ gridTemplateAreas: undefined }}>
-        <motion.img src="/images/brand/logo-transparent.png" alt={t('brand')} width="720" height="720" fetchpriority="high"
+        <motion.img src={LOGO_URL} alt={t('brand')} width="720" height="720" fetchpriority="high"
           initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }}
           className="floaty mx-auto w-52 sm:w-72 md:w-[22rem] lg:w-[26rem] h-auto drop-shadow-[0_12px_24px_rgba(67,7,7,.55)] md:row-start-1" />
         <motion.img src="/images/products/mansaf-plate.jpg" alt={ar ? 'صينية منسف بالأرز واللحم وصوص الجميد والصنوبر' : 'Mansaf platter with rice, meat, jameed sauce and pine nuts'}
@@ -42,7 +46,7 @@ export default function Hero() {
           <div className="gold-line my-3" />
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-cream text-base sm:text-lg font-semibold">{t('hero.sub')}</motion.p>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="mt-5 flex flex-wrap justify-center gap-3">
-            <button className="btn-gold" onClick={() => setOrderNow({ productId: 'meat-single', sizeId: 'm', qty: 1 })}><ShoppingCart size={20} />{t('common.orderNow')}</button>
+            <button disabled={!products.length} className="btn-gold" onClick={() => setOrderNow({ productId: (getProduct(HERO_PRODUCT_ID)||products[0])?.id, sizeId: (getProduct(HERO_PRODUCT_ID)||products[0])?.sizes?.find(s=>s.id==='m')?.id || (getProduct(HERO_PRODUCT_ID)||products[0])?.sizes?.[0]?.id || null, qty: 1 })}><ShoppingCart size={20} />{t('common.orderNow')}</button>
             <Link to="/menu" className="btn-outline">{t('common.discover')}</Link>
           </motion.div>
         </div>

@@ -1,15 +1,19 @@
+import { HERO_PRODUCT_ID } from '../../config/restaurant';
+import { getProduct, products } from '../../data/products';
+import { useShop } from '../../context/ShopContext';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import Reveal from '../ui/Reveal';
 export default function CTA() {
   const { t, setOrderNow } = useApp();
+  useShop();
   return (
     <section className="geo py-16 px-4 text-center" style={{ background: 'linear-gradient(#650606,#430707)' }}>
       <Reveal className="mx-auto max-w-3xl rounded-[2rem] border-2 border-gold p-8 shadow-[inset_0_0_0_5px_#650606,inset_0_0_0_6px_#E9AE43]">
         <h2 className="font-display text-3xl sm:text-5xl text-gold-light">{t('cta.title')}</h2>
         <p className="text-cream text-lg mt-3 font-semibold">{t('cta.text')}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <button className="btn-gold" onClick={() => setOrderNow({ productId: 'meat-single', sizeId: 'm', qty: 1 })}>{t('common.orderNow')}</button>
+          <button disabled={!products.length} className="btn-gold" onClick={() => setOrderNow({ productId: (getProduct(HERO_PRODUCT_ID)||products[0])?.id, sizeId: (getProduct(HERO_PRODUCT_ID)||products[0])?.sizes?.find(s=>s.id==='m')?.id || (getProduct(HERO_PRODUCT_ID)||products[0])?.sizes?.[0]?.id || null, qty: 1 })}>{t('common.orderNow')}</button>
           <Link to="/menu" className="btn-outline">{t('common.browse')}</Link>
         </div>
       </Reveal>

@@ -1,3 +1,5 @@
+import { LOGO_URL } from '../../config/restaurant';
+import { useShop } from '../../context/ShopContext';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu as MenuIcon, X, Languages, MessageCircle } from 'lucide-react';
@@ -9,6 +11,7 @@ const links = [['home', '/'], ['about', '/#about'], ['menu', '/menu'], ['why', '
 
 export default function Header() {
   const { t, lang, setLang, count, bump, setDrawer } = useApp();
+  useShop();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
@@ -20,7 +23,7 @@ export default function Header() {
     <header className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 border-b ${solid ? 'bg-burgundy border-gold/60 shadow-lg' : 'bg-gradient-to-b from-burgundy-deep/90 to-transparent border-transparent'}`}>
       <div className="mx-auto max-w-7xl h-16 px-4 flex items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-2 shrink-0" aria-label={t('brand')}>
-          <img src="/images/brand/logo-transparent.png" alt={t('brand')} width="52" height="52" className="h-12 w-12 object-contain" />
+          <img src={LOGO_URL} alt={t('brand')} width="52" height="52" className="h-12 w-12 object-contain" />
           <span className="font-display text-xl text-gold-light hidden sm:block">{t('brand')}</span>
         </Link>
         <nav className="hidden lg:flex items-center" aria-label="Main">

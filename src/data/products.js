@@ -13,7 +13,7 @@ const sized = (p) =>
     price: p[i],
   }));
 
-export const categories = [
+export let categories = [
   { id: 'all', label: { ar: 'الكل', en: 'All' } },
   { id: 'meat', label: { ar: 'منسف لحم', en: 'Meat Mansaf' } },
   { id: 'chicken', label: { ar: 'منسف دجاج', en: 'Chicken Mansaf' } },
@@ -21,7 +21,7 @@ export const categories = [
   { id: 'extras', label: { ar: 'إضافات', en: 'Extras' } },
 ];
 
-export const products = [
+export let products = [
   {
     id: 'meat-single',
     category: 'meat',
@@ -134,3 +134,9 @@ export const unitPrice = (product, sizeId) =>
       product.sizes[0]
     ).price
     : product.price;
+
+export const replaceCatalog = (nextCategories, nextProducts) => {
+  categories = [{ id: 'all', label: { ar: 'الكل', en: 'All' } }, ...nextCategories];
+  products = nextProducts;
+};
+export const labelFor = (value, lang) => (lang === 'en' && value?.en?.trim()) || value?.ar || '';

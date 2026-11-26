@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { translations } from '../i18n/translations';
+import { useShop } from './ShopContext';
+import { getProduct } from '../data/products';
 
 const Ctx = createContext(null);
 export const useApp = () => useContext(Ctx);
@@ -8,6 +10,7 @@ const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } ca
 export const itemKey = (productId, sizeId) => `${productId}|${sizeId || '-'}`;
 
 export function AppProvider({ children }) {
+  const { revision, isConfigured, loading } = useShop();
   const [lang, setLang] = useState(() => read('mt_lang', 'ar'));
   const [items, setItems] = useState(() => read('mt_cart', []));
   const [drawer, setDrawer] = useState(false);
@@ -21,9 +24,19 @@ export function AppProvider({ children }) {
     write('mt_lang', lang);
   }, [lang]);
   useEffect(() => write('mt_cart', items), [items]);
+  useEffect(() => {
+    if (loading || (!isConfigured && !revision)) return;
+    setItems(old => old.filter(i => {
+      const p = getProduct(i.productId);
+      return p && (!p.sizes || p.sizes.some(s => s.id === i.sizeId));
+    }));
+    setOrderNow(old => old && getProduct(old.productId) ? old : null);
+  }, [revision, loading, isConfigured]);
 
   const t = useCallback((path) => path.split('.').reduce((o, k) => o?.[k], translations[lang]) ?? path, [lang]);
   const add = useCallback((productId, sizeId, qty = 1) => {
+    const product = getProduct(productId);
+    if (!product || (product.sizes && !product.sizes.some(s=>s.id===sizeId))) return;
     const key = itemKey(productId, sizeId);
     setItems((cur) => cur.some((i) => i.key === key)
       ? cur.map((i) => (i.key === key ? { ...i, qty: Math.min(99, i.qty + qty) } : i))

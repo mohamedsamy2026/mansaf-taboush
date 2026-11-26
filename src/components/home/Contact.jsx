@@ -1,11 +1,13 @@
+import { useShop } from '../../context/ShopContext';
 import { MessageCircle, Phone } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { waLink } from "../../utils/whatsapp";
-import { DISPLAY_PHONE, SOCIAL_HANDLE } from "../../config/restaurant";
+import { DISPLAY_PHONE, SOCIAL_HANDLE, SHOW_SOCIAL_HANDLE } from "../../config/restaurant";
 import Social from "../ui/Social";
 import Reveal from "../ui/Reveal";
 export default function Contact() {
   const { t, lang } = useApp();
+  useShop();
   const msg =
     lang === "ar"
       ? "مرحبًا منسف طبوش، لدي استفسار عن التوصيل."
@@ -46,9 +48,9 @@ export default function Contact() {
         </div>
         <div className="mt-6 flex flex-col items-center gap-2 text-burgundy">
           <Social />
-          <bdi dir="ltr" className="font-bold">
+          {SHOW_SOCIAL_HANDLE && SOCIAL_HANDLE && <bdi dir="ltr" className="font-bold">
             {SOCIAL_HANDLE}
-          </bdi>
+          </bdi>}
         </div>
       </Reveal>
     </section>

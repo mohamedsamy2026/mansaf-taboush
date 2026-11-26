@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ShoppingCart, Check } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { money } from '../../utils/format';
-import { unitPrice } from '../../data/products';
+import { unitPrice, labelFor } from '../../data/products';
 import Qty from '../ui/Qty';
 
 export default function ProductCard({ product }) {
@@ -13,15 +13,15 @@ export default function ProductCard({ product }) {
   const addIt = () => { add(product.id, size, qty); setDone(true); setTimeout(() => setDone(false), 1400); };
   return (
     <article className="cream-panel overflow-hidden flex flex-col transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
-      <img src={product.image} alt={product.name[lang]} loading="lazy" width="648" height="305" className="w-full h-44 object-cover border-b-2 border-gold" />
+      <img src={product.image} alt={labelFor(product.name,lang)} loading="lazy" width="648" height="305" className="w-full h-44 object-cover border-b-2 border-gold" />
       <div className="p-4 flex flex-col gap-3 flex-1">
-        <div><h3 className="font-display text-2xl text-burgundy leading-tight">{product.name[lang]}</h3>
-          <p className="text-sm font-semibold text-ink/80 mt-1">{product.desc[lang]}</p></div>
+        <div><h3 className="font-display text-2xl text-burgundy leading-tight">{labelFor(product.name,lang)}</h3>
+          <p className="text-sm font-semibold text-ink/80 mt-1">{labelFor(product.desc,lang)}</p></div>
         {product.sizes && (
           <div role="radiogroup" aria-label={t('common.size')} className="flex flex-wrap gap-2">
             {product.sizes.map((s) => (
               <button key={s.id} role="radio" aria-checked={size === s.id} onClick={() => setSize(s.id)}
-                className={`px-4 min-h-[40px] rounded-full border-2 font-bold text-sm transition ${size === s.id ? 'bg-burgundy text-gold-light border-gold' : 'border-gold/70 text-burgundy hover:bg-gold/20'}`}>{s.label[lang]}</button>
+                className={`px-4 min-h-[40px] rounded-full border-2 font-bold text-sm transition ${size === s.id ? 'bg-burgundy text-gold-light border-gold' : 'border-gold/70 text-burgundy hover:bg-gold/20'}`}>{labelFor(s.label,lang)}</button>
             ))}
           </div>
         )}

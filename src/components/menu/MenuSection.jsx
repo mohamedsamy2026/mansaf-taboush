@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { categories, products } from '../../data/products';
+import { labelFor } from '../../data/products';
+import { useShop } from '../../context/ShopContext';
 import { useApp } from '../../context/AppContext';
 import ProductCard from './ProductCard';
 import Reveal from '../ui/Reveal';
 
 export default function MenuSection({ preview = false }) {
   const { t, lang } = useApp();
+  const { categories, products } = useShop();
   const [cat, setCat] = useState('all');
   const list = preview ? products.filter((p) => p.featured || p.category === 'chicken').slice(0, 3) : products.filter((p) => cat === 'all' || p.category === cat);
   return (
@@ -18,7 +20,7 @@ export default function MenuSection({ preview = false }) {
           <div className="flex gap-2 overflow-x-auto pb-3 mb-4 sm:justify-center" role="tablist" aria-label={t('menu.title')}>
             {categories.map((c) => (
               <button key={c.id} role="tab" aria-selected={cat === c.id} onClick={() => setCat(c.id)}
-                className={`shrink-0 px-5 min-h-[44px] rounded-full border-2 font-bold transition ${cat === c.id ? 'bg-burgundy text-gold-light border-gold shadow-md' : 'bg-cream border-gold/70 text-burgundy hover:bg-gold/25'}`}>{c.label[lang]}</button>
+                className={`shrink-0 px-5 min-h-[44px] rounded-full border-2 font-bold transition ${cat === c.id ? 'bg-burgundy text-gold-light border-gold shadow-md' : 'bg-cream border-gold/70 text-burgundy hover:bg-gold/25'}`}>{labelFor(c.label,lang)}</button>
             ))}
           </div>
         )}

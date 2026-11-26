@@ -1,8 +1,8 @@
 import { WHATSAPP_NUMBER, DELIVERY_FEE } from '../config/restaurant';
-import { getProduct, unitPrice } from '../data/products';
+import { getProduct, unitPrice, labelFor } from '../data/products';
 import { money } from './format';
 
-export const lineTotal = (item) => unitPrice(getProduct(item.productId), item.sizeId) * item.qty;
+export const lineTotal = (item) => { const p = getProduct(item.productId); return p ? unitPrice(p,item.sizeId) * item.qty : 0; };
 export const subtotalOf = (items) => items.reduce((s, i) => s + lineTotal(i), 0);
 
 export const waLink = (text = '') =>
@@ -23,7 +23,7 @@ export function buildOrderMessage(lang, items, customer) {
   const lines = items.map((it, i) => {
     const p = getProduct(it.productId);
     const size = p.sizes ? p.sizes.find((s) => s.id === it.sizeId) || p.sizes[0] : null;
-    return [`${i + 1}. ${p.name[lang]}`, size && `${L.size}: ${size.label[lang]}`, `${L.qty}: ${it.qty}`, `${L.price}: ${money(lineTotal(it), lang)}`]
+    return [`${i + 1}. ${labelFor(p.name,lang)}`, size && `${L.size}: ${labelFor(size.label,lang)}`, `${L.qty}: ${it.qty}`, `${L.price}: ${money(lineTotal(it), lang)}`]
       .filter(Boolean).join('\n');
   });
   const sub = subtotalOf(items);

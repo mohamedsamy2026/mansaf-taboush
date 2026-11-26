@@ -1,8 +1,20 @@
-export const WHATSAPP_NUMBER = '966531562040';
-export const DISPLAY_PHONE = '+966531562040';
-
-export const CURRENCY = { ar: 'ر.س', en: 'SAR' }; 
-export const DELIVERY_FEE = null;
-export const SOCIAL_HANDLE = '@MansafTaboush';
-
-export const SOCIAL_LINKS = { youtube: "https://www.youtube.com/@mshawerfou", instagram: null, tiktok: null, x: null };
+export let WHATSAPP_NUMBER = '966531562040';
+export let DISPLAY_PHONE = '+966531562040';
+export let CURRENCY = { ar: 'ر.س', en: 'SAR' };
+export let DELIVERY_FEE = null;
+export let SOCIAL_HANDLE = '@MansafTaboush';
+export let SHOW_SOCIAL_HANDLE = true;
+export let SOCIAL_LINKS = { youtube: 'https://www.youtube.com/@mshawerfou' };
+export let LOGO_URL = '/images/brand/logo-transparent.png';
+export let HERO_PRODUCT_ID = 'meat-single';
+export const applyRestaurantSettings = (s = {}, links = []) => {
+  WHATSAPP_NUMBER = `${s.whatsapp_country_code || '+966'}${s.whatsapp_local || '531562040'}`.replace(/\D/g, '');
+  DISPLAY_PHONE = `${s.phone_country_code || '+966'}${s.phone_local || '531562040'}`;
+  CURRENCY = { ar: s.currency_ar || 'ر.س', en: s.currency_en || 'SAR' };
+  DELIVERY_FEE = s.delivery_fee == null ? null : Number(s.delivery_fee);
+  SOCIAL_HANDLE = s.social_handle || '';
+  SHOW_SOCIAL_HANDLE = Boolean(s.show_social_handle);
+  SOCIAL_LINKS = Object.fromEntries(links.filter(x => x.url).map(x => [x.platform,x.url]));
+  LOGO_URL = s.logo_url || '/images/brand/logo-transparent.png';
+  HERO_PRODUCT_ID = s.hero_product_id || null;
+};

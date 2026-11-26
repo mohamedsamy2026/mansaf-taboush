@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
-import { getProduct, unitPrice } from "../../data/products";
+import { getProduct, unitPrice, labelFor } from "../../data/products";
 import { money } from "../../utils/format";
 import Qty from "../ui/Qty";
 
@@ -24,11 +24,11 @@ export default function CartLines() {
             />
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-burgundy leading-tight">
-                {p.name[lang]}
+                {labelFor(p.name,lang)}
               </h3>
               {size && (
                 <p className="text-sm font-semibold">
-                  {t("common.size")}: {size.label[lang]}
+                  {t("common.size")}: {labelFor(size.label,lang)}
                 </p>
               )}
               <p className="text-md font-bold text-burgundy">
@@ -42,7 +42,7 @@ export default function CartLines() {
                   </strong>
                   <button
                     onClick={() => remove(it.key)}
-                    aria-label={`${t("common.remove")}: ${p.name[lang]}`}
+                    aria-label={`${t("common.remove")}: ${labelFor(p.name,lang)}`}
                     className="p-2 text-red-800 hover:bg-red-100 rounded-full"
                   >
                     <Trash2 size={18} />
